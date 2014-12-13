@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Script to setup necessary programs and tools
 # Edited to work on LXDE (tested on Lubuntu 14.04.1 LTS x86_64)
