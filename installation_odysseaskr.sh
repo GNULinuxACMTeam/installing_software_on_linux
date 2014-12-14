@@ -61,14 +61,9 @@ apt-get -y install firefox
 
 #=======================================================================
 
-# Programming Languages
+# Compilers
 apt-get -y install ruby
-# JDK 8 u25
-wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u25-b17/jdk-8u25-linux-x64.tar.gz
-tar zxvf jdk-8u25-linux-x64.tar.gz
-cp -rf jdk1.8.0_25 ~/Applications
-rm -rf jdk1.8.0_25
-rm -rf jdk-8u25-linux-x64.tar.gz
+apt-get -y install openjdk-7-jdk
 
 #=======================================================================
 
@@ -99,11 +94,19 @@ rm -rf pycharm-community-4.0.2
 rm -rf pycharm.tar.gz
 cd ~/Applications/pycharm-community-4.0.2/bin/
 ./pycharm.sh
+cd
 #Brackets
 wget https://github.com/adobe/brackets/releases/download/release-1.0%2Beb4/Brackets.1.0.Extract.64-bit.deb -O brackets.deb
 gdebi brackets.deb
 rm -rf brackets.deb
-
+# IntelliJ
+wget http://download.jetbrains.com/idea/ideaIC-14.0.2.tar.gz -O intelliJ.tar.gz
+tar -xzf intelliJ.tar.gz
+cp -rf idea-IC-139.659.2 ~/Applications
+rm -rf idea-IC-139.659.2
+rm -rf intelliJ.tar.gz
+cd ~/Applications/idea-IC-139.659.2/bin
+./idea.sh
 #=======================================================================
 
 # Mail client
