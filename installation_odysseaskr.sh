@@ -8,6 +8,9 @@ echo "Start"
 add-apt-repository -y ppa:ubuntu-mozilla-daily/firefox-aurora
 apt-get -y update
 
+# Get gdebi to install .deb
+apt-get -y install gdebi
+
 #=======================================================================
 
 # Text Editors
