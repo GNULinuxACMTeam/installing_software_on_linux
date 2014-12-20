@@ -6,7 +6,11 @@
 echo "Start"
 # Add needed repositories
 add-apt-repository -y ppa:ubuntu-mozilla-daily/firefox-aurora
+add-apt-repository -y ppa:webupd8team/sublime-text-2
 apt-get -y update
+
+# Prepare the Application folder
+mkdir ~/Applications
 
 # Get gdebi to install .deb
 apt-get -y install gdebi
@@ -15,36 +19,7 @@ apt-get -y install gdebi
 
 # Text Editors
 apt-get -y install vim
-# Sublime text 2
-# Download
-wget "http://c758482.r82.cf2.rackcdn.com/Sublime Text 2.0.2 x64.tar.bz2"
-# Extract
-tar -xvf "Sublime Text 2.0.2 x64.tar.bz2"
-# Move folder
-cp -rf Sublime\ Text\ 2 ~/Applications
-rm -rf "Sublime Text 2"
-# Create 
-ln -s ~/Applications/Sublime\ Text\ 2/sublime_text /usr/bin/sublime
-# Create menu item
-touch /usr/share/applications/sublime.desktop
-sudo echo -e "[Desktop Entry]
-Version=1.0
-Name=Sublime Text 2
-# Only KDE 4 seems to use GenericName, so we reuse the KDE strings.
-# From Ubuntu's language-pack-kde-XX-base packages, version 9.04-20090413.
-GenericName=Text Editor
-
-Exec=sublime
-Terminal=false
-Icon=/home/odysseas/Applications/Sublime Text 2/Icon/16x16/sublime_text.png
-Type=Application
-Categories=TextEditor;IDE;Development
-X-Ayatana-Desktop-Shortcuts=NewWindow
-
-[NewWindow Shortcut Group]
-Name=New Window
-Exec=sublime -n
-TargetEnvironment=LXDE" >> sudo "/usr/share/applications/sublime.desktop"
+apt-get -y install sublime-text
 
 # Set Sublime Text as default text editor
 sed -i 's/sublime/gedit/' /usr/share/applications/defaults.list
@@ -67,6 +42,7 @@ apt-get -y install firefox
 # Compilers
 apt-get -y install ruby
 apt-get -y install openjdk-7-jdk
+apt-get -y install g++
 
 #=======================================================================
 
@@ -80,12 +56,6 @@ rm -rf get-pip.py
 
 #=======================================================================
 
-# LAMP
-# No -y to prevent autoconfiguring mysql
-apt-get install lamp-server^
-
-#=======================================================================
-
 # IDEs
 apt-get -y install codeblocks
 apt-get -y install octave
@@ -95,9 +65,7 @@ tar -xzf pycharm.tar.gz
 cp -rf pycharm-community-4.0.2 ~/Applications
 rm -rf pycharm-community-4.0.2
 rm -rf pycharm.tar.gz
-cd ~/Applications/pycharm-community-4.0.2/bin/
-./pycharm.sh
-cd
+ln -s ~/Applications/pycharm-community-*/bin/pycharm.sh /usr/bin/pycharm
 #Brackets
 wget https://github.com/adobe/brackets/releases/download/release-1.0%2Beb4/Brackets.1.0.Extract.64-bit.deb -O brackets.deb
 gdebi brackets.deb
@@ -108,8 +76,8 @@ tar -xzf intelliJ.tar.gz
 cp -rf idea-IC-139.659.2 ~/Applications
 rm -rf idea-IC-139.659.2
 rm -rf intelliJ.tar.gz
-cd ~/Applications/idea-IC-139.659.2/bin
-./idea.sh
+ln -s ~/Applications/idea-IC-*/bin/idea.sh /usr/bin/intellij
+
 #=======================================================================
 
 # Mail client
@@ -136,6 +104,14 @@ apt-get -y install wireshark
 apt-get -y install aircrack-ng
 apt-get -y install hydra
 apt-get -y install nmap
+apt-get -y install iptables
+cd ~/Applications
+wget http://portswigger.net/burp/burpsuite_free_v1.6.jar
+
+#=======================================================================
+
+# LAMP
+apt-get -y install lamp-server^
 
 #=======================================================================
 
