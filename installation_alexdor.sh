@@ -82,7 +82,7 @@ apt-get install hydra -y
 apt-get install nmap -y
 apt-get install aircrack-ng -y
 apt-get install medusa -y
-wget -o ~/Desktop/burpsuite_free_v1.6.jar http://portswigger.net/burp/burpsuite_free_v1.6.jar
+wget -P ~/Desktop http://portswigger.net/burp/burpsuite_free_v1.6.jar
 chmod +x ~/Desktop/burpsuite_free_v1.6.jar
 
 # Compilers
