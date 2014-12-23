@@ -1,13 +1,13 @@
 #! /bin/bash -x
 
 #Script for installing on Ubuntu the following programms 
-#Tools: Wget, Git, Flash, Dropbox, Y PPA Manager, Ubuntu Make
+#Tools: Wget, Git, Flash, Dropbox, Y PPA Manager, Ubuntu Make, Ubuntu restricted 
 #Text Editors: Vim, Bluefish, Atom, Sublime
-#Multimedia Vlc, Gimp, Spotify
+#Multimedia Vlc, Gimp, Spotify, Libavcodec
 #Browsers: Firefox for developers, Chromium, Chrome
 #Mail Clients / IM: Thunderbird, Skype
 #Security: Iptables, Wireshark, Hydra, Nmap, Aircrack-ng, Medusa, Metasploit, Burpsuite
-#Compilers: Python, Oracle's jdk, Ruby, G++
+#Compilers: Python, Oracle's jdk 8, Ruby, G++
 #IDEs: Octave, Codeblocks, Brackets, IntelliJ IDEA, Android Studio, Eclipse, Pycharm
 
 echo "Start"
@@ -37,6 +37,8 @@ apt-get install flashplugin-installer -y
 apt-get install nautilus-dropbox -y
 apt-get install y-ppa-manager -y
 apt-get install ubuntu-make -y
+apt-get install ubuntu-restricted-extras -y 
+
 
 #Text Editors
 apt-get install vim -y
@@ -65,6 +67,7 @@ apt-get install gimp-data -y
 apt-get install gimp-plugin-registry -y
 apt-get install gimp-data-extras -y
 apt-get install spotify-client -y
+apt-get install libavcodec-extra -y
 
 #Browsers
 apt-get install firefox -y
@@ -90,7 +93,9 @@ apt-get install ruby -y
 apt-get install g++ -y
 apt-get install python -y
 apt-get purge openjdk* -y
-apt-get install oracle-java7-installer -y
+echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections #accepts oracl's license
+apt-get install oracle-java8-installer -y
+apt-get install oracle-java8-set-default -y #Set Java environment variables
 #for open jdk: apt-get install openjdk-7-jdk -y
 
 #IDE
@@ -103,8 +108,8 @@ umake ide eclipse tools/ide/eclipse
 umake ide pycharm tools/ide/pycharm
 
 #Metasploit
-wget http://downloads.metasploit.com/data/releases/metasploit-latest-linux-installer.run
-# for 64-bit: wget http://downloads.metasploit.com/data/releases/metasploit-latest-linux-x64-installer.run
+wget http://downloads.metasploit.com/data/releases/metasploit-latest-linux-x64-installer.run
+# for 32-bit: wget http://downloads.metasploit.com/data/releases/metasploit-latest-linux-installer.run
 chmod +x metasploit-latest-linux-*.run
 ./metasploit-latest-linux-*.run
 rm -rf metasploit*.run
