@@ -29,6 +29,7 @@ add-apt-repository "deb http://linux.dropbox.com/ubuntu $(lsb_release -sc) main"
 add-apt-repository ppa:webupd8team/y-ppa-manager -y # y ppa manager
 add-apt-repository ppa:ubuntu-desktop/ubuntu-make -y #Ubuntu Make
 apt-get update
+cd
 
 #Tools
 apt-get install wget -y
@@ -46,8 +47,6 @@ apt-get install bluefish -y
 apt-get install atom -y
 apt-get install sublime-text -y
 sed -i 's/sublime-text/gedit/' /usr/share/applications/defaults.list # Set Sublime Text as default text editor
-
-
 
 #Sublime text 2 manually:
 #for 32-bit: wget http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2.tar.bz2
@@ -87,6 +86,12 @@ apt-get install aircrack-ng -y
 apt-get install medusa -y
 wget -P ~/Desktop http://portswigger.net/burp/burpsuite_free_v1.6.jar
 chmod +x ~/Desktop/burpsuite_free_v1.6.jar
+#Making user able to run wireshark without root privilages
+#You have to log out and log in again in order for the changes to take place
+addgroup -system wireshark 
+chown root:wireshark /usr/bin/dumpcap 
+setcap cap_net_raw,cap_net_admin=eip /usr/bin/dumpcap
+usermod -a -G wireshark $USER
 
 # Compilers
 apt-get install ruby -y
@@ -102,7 +107,7 @@ apt-get install oracle-java8-set-default -y #Set Java environment variables
 apt-get install octave -y
 apt-get install codeblocks -y
 apt-get install brackets -y
-umake android
+umake android tools/android/android-studio
 umake ide idea tools/ide/idea
 umake ide eclipse tools/ide/eclipse
 umake ide pycharm tools/ide/pycharm
@@ -118,6 +123,8 @@ msfupdate #updates metasploit
 sublime-text #the first time you have to open sublime as root
 
 #Cleaning up
+apt-get check
+apt-get -f install
 apt-get autoremove -y
 apt-get autoclean -y
 
