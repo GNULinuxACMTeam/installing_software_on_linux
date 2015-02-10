@@ -10,16 +10,22 @@
 	#Compilers: Python, Oracle's jdk 8, Ruby, G++
 	#IDEs: Octave, Codeblocks, Brackets, IntelliJ IDEA, Android Studio, Eclipse, Pycharm
 
+#Check if the script has root privileges 
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
 echo "Start"
 
 #Add necessary repositories 
+	add-apt-repository -y ppa:libreoffice/ppa #libreoffice oficial repo
 	add-apt-repository -y  ppa:ubuntu-mozilla-daily/firefox-aurora  #firefox for developers
 	add-apt-repository -y  ppa:otto-kesselgulasch/gimp  #gimp latest stable version
 	add-apt-repository -y  ppa:videolan/stable-daily  #vlc latest stable version
 	apt-add-repository "deb http://repository.spotify.com stable non-free"  #spotify
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 94558F59 #spotify public key
 	add-apt-repository -y  ppa:webupd8team/java  #oracle java
-	add-apt-repository -y  ppa:webupd8team/sublime-text-2  #sublime text 2
 	add-apt-repository -y  ppa:webupd8team/atom  #atom text editor
 	add-apt-repository -y  ppa:webupd8team/brackets  #brackets
 	wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - #Add key for Chrome
@@ -46,26 +52,31 @@ echo "Start"
 	apt-get -y install bluefish 
 	apt-get -y install atom 
 	apt-get -y install sublime-text 
-	#Install Light Table
-		wget https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.7.2/LightTableLinux64.tar.gz
-		#for 32-bit wget https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.7.2/LightTableLinux.tar.gz
-		tar -xzf LightTableLinux*.tar.gz -C /opt
-		rm LightTableLinux*.tar.gz
+	#Light Table
+		if [ $(getconf LONG_BIT) == "64" ];	then
+		  	wget https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.7.2/LightTableLinux64.tar.gz
+		else
+		  	wget https://d35ac8ww5dfjyg.cloudfront.net/playground/bins/0.7.2/LightTableLinux.tar.gz
+		fi
+		tar -xzf LightTable*.tar.gz -C /opt
+		rm LightTable*.tar.gz
 		echo -e "[Desktop Entry]\nVersion=1.0\nName=Light Table\nGenericName=Text Editor\nExec=/opt/LightTable/LightTable\nTerminal=false\nIcon=/opt/LightTable/core/img/lticon.png\nType=Application\nCategories=GTK;Utility;TextEditor;Application;IDE;Development;" >> "/usr/share/applications/light-table.desktop"
 		chmod +x /usr/share/applications/light-table.desktop
 		ln -s /opt/LightTable/LightTable /usr/local/bin/light-table
 	
-	sed -i 's/gedit.desktop/Sublime-Text-2.desktop/g' /etc/gnome/defaults.list # Set Sublime Text as default text editor
-	#Sublime text 2 manually:
-		#for 32-bit: wget http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2.tar.bz2
-		#for 64-bit: wget http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2%20x64.tar.bz2
-		#tar -xvf Sub*.bz2
-		#cp -rv Sublime\ Text\ 2 /opt
-		#rm -rf Sublime\ Text\ 2
-		#rm -rf Sub*.br2
-		#ln -s /opt/Sublime\ Text\ 2/sublime_text /usr/bin/sublime
-		#echo -e "[Desktop Entry]\nVersion=1.0\nName=Sublime Text 2\nGenericName=Text Editor\nExec=sublime\nTerminal=false\nIcon=/opt/Sublime Text 2/Icon/48x48/sublime_text.png\nType=Application\nCategories=TextEditor;IDE;Development\nX-Ayatana-Desktop-Shortcuts=NewWindow\n\n[NewWindow Shortcut Group]\nName=New Window\nExec=sublime -n\nTargetEnvironment=Unity" >> "/usr/share/applications/sublime.desktop"
-		#sed -i 's/gedit.desktop/Sublime-Text-2.desktop/g' /etc/gnome/defaults.list # Set Sublime Text as default text editor
+	#Sublime text 2
+		if [ $(getconf LONG_BIT) == "64" ];	then
+		  	wget http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2%20x64.tar.bz2
+		else
+		  	wget http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2.tar.bz2
+		fi
+		tar -xvf Sub*.bz2
+		cp -rv Sublime\ Text\ 2 /opt
+		rm -rf Sublime\ Text\ 2
+		rm -rf Sub*.br2
+		ln -s /opt/Sublime\ Text\ 2/sublime_text /usr/bin/sublime-text
+		echo -e "[Desktop Entry]\nVersion=1.0\nName=Sublime Text 2\nGenericName=Text Editor\nExec=sublime\nTerminal=false\nIcon=/opt/Sublime Text 2/Icon/48x48/sublime_text.png\nType=Application\nCategories=TextEditor;IDE;Development\nX-Ayatana-Desktop-Shortcuts=NewWindow\n\n[NewWindow Shortcut Group]\nName=New Window\nExec=sublime -n\nTargetEnvironment=Unity" >> "/usr/share/applications/sublime.desktop"
+		sed -i 's/gedit.desktop/Sublime-Text-2.desktop/g' /etc/gnome/defaults.list # Set Sublime Text as default text editor
 
 #Multimedia
 	apt-get -y install vlc 
@@ -121,14 +132,15 @@ echo "Start"
 	umake ide pycharm tools/ide/pycharm
 
 #Metasploit
-	wget http://downloads.metasploit.com/data/releases/metasploit-latest-linux-x64-installer.run
-	# for 32-bit: wget http://downloads.metasploit.com/data/releases/metasploit-latest-linux-installer.run
-	chmod +x metasploit-latest-linux-*.run
-	./metasploit-latest-linux-*.run
-	rm -rf metasploit*.run
+if [ $(getconf LONG_BIT) == "64" ];	then
+  	wget -O metasploit http://downloads.metasploit.com/data/releases/metasploit-latest-linux-x64-installer.run
+else
+  	wget -O metasploit http://downloads.metasploit.com/data/releases/metasploit-latest-linux-installer.run
+fi
+	chmod +x metasploit.run
+	./metasploit.run
+	rm -rf metasploit.run
 	msfupdate #updates metasploit
-
-sublime-text #the first time you have to open sublime as root
 
 #Cleaning up
 	apt-get check
