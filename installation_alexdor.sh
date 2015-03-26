@@ -56,7 +56,6 @@ function create_log_directory(){
 
 # Write log file
 function write_log(){
-  #TO DO
   if [ -z "$2" ];then
     echo "$1 : Parameter error" >> $logFile
   else
