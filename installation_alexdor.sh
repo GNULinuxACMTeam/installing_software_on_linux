@@ -1,16 +1,16 @@
 #! /bin/bash
 
 #Script for installing on Ubuntu the following programms
-	#Tools: Wget, Curl, Tmux, Zsh, Git, Dropbox, Y PPA Manager, Ubuntu Make, Ubuntu restricted
-	#Text Editors: Vim, Atom, Sublime
-	#Multimedia Vlc, Gimp, Spotify
-	#Browsers: Firefox for developers, Chromium, Chrome
-	#Mail Clients / IM: Thunderbird
-	#Security: Iptables, Wireshark, Hydra, Nmap, Aircrack-ng, Medusa
-	#Compilers: Python, Oracle's jdk 8, Ruby, G++, GCC
-	#IDEs: IntelliJ IDEA, Android Studio, Eclipse, Pycharm
+	# Tools: Wget, Curl, Tmux, Zsh, Git, Dropbox, Y PPA Manager, Ubuntu Make, Ubuntu restricted
+	# Text Editors: Vim, Atom, Sublime
+	# Multimedia Vlc, Gimp, Spotify
+	# Browsers: Firefox for developers, Chromium, Chrome
+	# Mail Clients / IM: Thunderbird
+	# Security: Iptables, Wireshark, Hydra, Nmap, Aircrack-ng, Medusa
+	# Compilers: Python, Oracle's jdk 8, Ruby, G++, GCC
+	# IDEs: IntelliJ IDEA, Android Studio, Eclipse, Pycharm
 
-export logDir="/var/log/installation_script" #Log directory
+export logDir="/var/log/installation_script" # Log directory
 export logFile="$logDir/installation_script_ubuntu.log" # Log file
 export architecture=$(uname -m) # Computers architecture
 export tempDir=$(mktemp -d /tmp/tempdir.XXXXXXXX) # Create temp directory
@@ -18,13 +18,13 @@ export alreadyInstalledCode=999 # Already installed code
 export showLog=false
 
 # Programms to be installed from reposittories
-declare -a tools=(wget curl git dropbox tmux zsh y-ppa-manager ubuntu-make ubuntu-restricted-extras) #Tools
-declare -a textEditor=(vim atom) #Text Editors
-declare -a multimedia=(vlc gimp gimp-data gimp-data-extras gimp-plugin-registry spotify-client) #Multimedia
-declare -a browsers=(firefox chromium-browser google-chrome-stable) #Browsers
-declare -a mailClient=(thunderbird) #Mail Client
-declare -a security=(iptables wireshark hydra nmap aircrack-ng medusa) #Security
-declare -a compilers=(ruby python3 g++ gcc oracle-java8-installer oracle-java8-set-default) #Compilers
+declare -a tools=(wget curl git dropbox tmux zsh y-ppa-manager ubuntu-make ubuntu-restricted-extras) # Tools
+declare -a textEditor=(vim atom) # Text Editors
+declare -a multimedia=(vlc gimp gimp-data gimp-data-extras gimp-plugin-registry spotify-client) # Multimedia
+declare -a browsers=(firefox chromium-browser google-chrome-stable) # Browsers
+declare -a mailClient=(thunderbird) # Mail Client
+declare -a security=(iptables wireshark hydra nmap aircrack-ng medusa) # Security
+declare -a compilers=(ruby python3 g++ gcc oracle-java8-installer oracle-java8-set-default) # Compilers
 
 # Check for root privilages
 function check_root_privilages(){
@@ -91,20 +91,20 @@ function install_repo_apps(){
 
 # Add repositories
 function add_repositories(){
-	add-apt-repository -y ppa:libreoffice/ppa #Libreoffice oficial repo
-	add-apt-repository -y  ppa:ubuntu-mozilla-daily/firefox-aurora  #Firefox for developers
-	add-apt-repository -y  ppa:otto-kesselgulasch/gimp  #Gimp latest stable version
-	add-apt-repository -y  ppa:videolan/stable-daily  #Vlc latest stable version
-	apt-add-repository "deb http://repository.spotify.com stable non-free"  #Spotify
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 94558F59 #Spotify public key
-	add-apt-repository -y  ppa:webupd8team/java  #Oracle java
-	add-apt-repository -y  ppa:webupd8team/atom  #Atom text editor
-	wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - #Add key for Chrome
-	sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'  #Set repo for Chrome
-	apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E #Add key for Dropbox
-	add-apt-repository -y  "deb http://linux.dropbox.com/ubuntu $(lsb_release -sc) main"  #Add repo for Dropbox
-	add-apt-repository -y  ppa:webupd8team/y-ppa-manager  #Y ppa manager
-	add-apt-repository -y  ppa:ubuntu-desktop/ubuntu-make  #Ubuntu Make
+	add-apt-repository -y ppa:libreoffice/ppa # Libreoffice oficial repo
+	add-apt-repository -y  ppa:ubuntu-mozilla-daily/firefox-aurora  # Firefox for developers
+	add-apt-repository -y  ppa:otto-kesselgulasch/gimp  # Gimp latest stable version
+	add-apt-repository -y  ppa:videolan/stable-daily  # Vlc latest stable version
+	apt-add-repository "deb http://repository.spotify.com stable non-free"  # Spotify
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 94558F59 # Spotify public key
+	add-apt-repository -y  ppa:webupd8team/java  # Oracle java
+	add-apt-repository -y  ppa:webupd8team/atom  # Atom text editor
+	wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - # Add key for Chrome
+	sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'  # Set repo for Chrome
+	apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E # Add key for Dropbox
+	add-apt-repository -y  "deb http://linux.dropbox.com/ubuntu $(lsb_release -sc) main"  # Add repo for Dropbox
+	add-apt-repository -y  ppa:webupd8team/y-ppa-manager  # Y ppa manager
+	add-apt-repository -y  ppa:ubuntu-desktop/ubuntu-make  # Ubuntu Make
 	apt-get update
 }
 
@@ -192,7 +192,7 @@ create_log_directory
 cd $tempDir
 echo "Installing the applications..."
 
-#apt-get -y purge openjdk* #delete openjdk
+apt-get -y purge openjdk* # delete openjdk
 echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections # Accepts oracl's license
 
 
@@ -229,7 +229,7 @@ configure_zsh
 # Configure Tmux
 configure_tmux
 
-#Cleaning up
+# Cleaning up
   rm -rf $tempDir
 	apt-get check
 	apt-get -f install
