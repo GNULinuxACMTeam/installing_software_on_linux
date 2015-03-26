@@ -1,11 +1,11 @@
-#! /bin/bash -x
+#! /bin/bash
 
 #Script for installing on Ubuntu the following programms
 	#Tools: Wget, Curl, Tmux, Zsh, Git, Dropbox, Y PPA Manager, Ubuntu Make, Ubuntu restricted
 	#Text Editors: Vim, Atom, Sublime
-	#Multimedia Vlc, Gimp, Spotify, Libavcodec
+	#Multimedia Vlc, Gimp, Spotify
 	#Browsers: Firefox for developers, Chromium, Chrome
-	#Mail Clients / IM: Thunderbird, Skype
+	#Mail Clients / IM: Thunderbird
 	#Security: Iptables, Wireshark, Hydra, Nmap, Aircrack-ng, Medusa
 	#Compilers: Python, Oracle's jdk 8, Ruby, G++, GCC
 	#IDEs: IntelliJ IDEA, Android Studio, Eclipse, Pycharm
@@ -15,16 +15,16 @@ export logFile="$logDir/installation_script_ubuntu.log" # Log file
 export architecture=$(uname -m) # Computers architecture
 export tempDir=$(mktemp -d /tmp/tempdir.XXXXXXXX) # Create temp directory
 export alreadyInstalledCode=999 # Already installed code
+export showLog=false
 
 # Programms to be installed from reposittories
-declare -a tools=(wget curl git tmux zsh nautilus-dropbox y-ppa-manager ubuntu-make ubuntu-restricted-extras) #Tools
+declare -a tools=(wget curl git dropbox tmux zsh y-ppa-manager ubuntu-make ubuntu-restricted-extras) #Tools
 declare -a textEditor=(vim atom) #Text Editors
-declare -a multimedia=(vlc gimp gimp-data gimp-data-extras gimp-plugin-registry spotify-client libavcodec-extra) #Multimedia
+declare -a multimedia=(vlc gimp gimp-data gimp-data-extras gimp-plugin-registry spotify-client) #Multimedia
 declare -a browsers=(firefox chromium-browser google-chrome-stable) #Browsers
-declare -a mailClient=(thunderbird skype) #Mail Client / IM
+declare -a mailClient=(thunderbird) #Mail Client
 declare -a security=(iptables wireshark hydra nmap aircrack-ng medusa) #Security
-declare -a compilers=(ruby python3 g++ gcc oracle-java8-installer oracle-java8-set-default ) #Compilers
-
+declare -a compilers=(ruby python3 g++ gcc oracle-java8-installer oracle-java8-set-default) #Compilers
 
 # Check for root privilages
 function check_root_privilages(){
@@ -36,15 +36,14 @@ function check_root_privilages(){
 
 # Check the internet connection
 function check_conection(){
-  if ![ "$(ping -c 1 google.com)" ];then
+  if [[ ! "$(ping -c 1 google.com)" ]];then
     echo "Please check your internet connection and execute the script again"
     exit 2
   fi
 }
 
 # Create log directory
-function create_log_directory()
-    {
+function create_log_directory(){
     	if [ ! -d $logDir ];then
     		mkdir $logDir
     		chown $USER:$USER $logDir
@@ -53,7 +52,7 @@ function create_log_directory()
     		mv $logFile $logFile$(date +%Y%m%d).log
     		touch $logFile
     	fi
-    }
+}
 
 # Write log file
 function write_log(){
@@ -70,7 +69,7 @@ function write_log(){
         ;;
       *)
         echo "$1 : installation failed (error code = $2)" >> $logFile
-        displayLog=true
+        showLog=true
         ;;
       esac
     fi
@@ -112,17 +111,17 @@ function add_repositories(){
 
 # Install the latest build of Sublime Text 3
 function install_sublime_text_3(){
-  urlFormat="http://c758482.r82.cf2.rackcdn.com/sublime-text_build-%d_%d.deb"
+  frontUrl="http://c758482.r82.cf2.rackcdn.com/sublime-text_build-"
   build=$(curl -Ls https://www.sublimetext.com/3 |
           grep '<h2>Build' | head -n1 |
           sed -E 's#<h2>Build ([0-9]+)</h2>#\1#g')
 
   sublimeName="Sublime_Text_3_$build"
 
-  if [ $(subl -v | awk '{print $NF}') == $build ] ; then
-    write_log $sublimeName $alreadyInstalledCode
+  if [[ ! -z $(which subl) && $(subl -v | awk '{print $NF}') == $build ]] ; then
+    		write_log $sublimeName $alreadyInstalledCode
   else
-    if [ $architecture == "x86_64" ];	then
+	if [ $architecture == "x86_64" ]; then
       url=$frontUrl$build"_amd64.deb"
       wget -q $url
       dpkg -i sublime-text_build*
@@ -135,19 +134,63 @@ function install_sublime_text_3(){
       dpkg -i sublime-text_build*
       exitLog=$?
       write_log $sublimeName $exitLog
-
-    fi
   fi
-
-
+fi
 }
+
+# Configure tmux
+function configure_tmux(){
+  # Check for existing files or directories and create needed ones
+    if [[ -e ~/.tmux.conf ]] ; then
+  	   mv ~/.tmux.conf ~/.tmux.conf.old$(date +%Y%m%d)
+  	  fi
+    if [[ -e ~/.tmux ]] ; then
+  	   mv ~/.tmux ~/.tmux.old$(date +%Y%m%d)
+  	  fi
+    if [[ ! -d ~/.tmux ]] ; then
+	     mkdir ~/.tmux
+    else
+      if [[ -e ~/.tmux/inx ]] ; then
+    	   mv ~/.tmux/inx ~/.tmux/inx.old$(date +%Y%m%d)
+    	  fi
+      if [[ -e ~/.tmux/xless ]] ;
+	       then mv ~/.tmux/xless ~/.tmux/xless.old$(date +%Y%m%d)
+	      fi
+    fi
+  # Download configuration files
+    wget -O ~/.tmux.conf -q https://raw.githubusercontent.com/alexdor/tmux/master/.tmux.conf
+    wget -O ~/.tmux/inx -q https://raw.githubusercontent.com/alexdor/tmux/master/.tmux/inx
+    wget -O ~/.tmux/xless -q https://raw.githubusercontent.com/alexdor/tmux/master/.tmux/xless
+}
+
+# Install and configure oh-my-zsh
+function configure_zsh(){
+  wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | bash
+
+  # Install zsh-syntax-highlighting
+    if [[ ! -d ~/.oh-my-zsh/custom ]]; then
+	     mkdir ~/.oh-my-zsh/costum
+	    fi
+    cd ~/.oh-my-zsh/custom/plugins
+    git clone git://github.com/zsh-users/zsh-syntax-highlighting.git
+    cd
+
+  # Configure .zshrc
+    sed -i 's/#COMPLETION_WAITING_DOTS/COMPLETION_WAITING_DOTS/' ~/.zshrc
+    sed -i 's/robbyrussell/wedisagree/' ~/.zshrc
+    sed -i 's/plugins=(.*/plugins=(git command-not-found tmux zsh-syntax-highlighting)/g' ~/.zshrc
+
+  # Set zsh as the default shell
+    chsh -s $(which zsh)
+}
+
 
 # Main part
 echo "Checking for root privilages"
 check_conection
-echo "Your internet connection"
+echo "Checking the internet connection"
 check_root_privilages
-echo "Add necessary repositories"
+echo "Adding necessary repositories"
 add_repositories
 echo "Creating log directory"
 create_log_directory
@@ -155,7 +198,7 @@ create_log_directory
 cd $tempDir
 echo "Installing the applications..."
 
-apt-get -y purge openjdk* #delete openjdk
+#apt-get -y purge openjdk* #delete openjdk
 echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections # Accepts oracl's license
 
 
@@ -167,13 +210,13 @@ install_repo_apps browsers
 install_repo_apps mailClient
 install_repo_apps compilers
 install_repo_apps security
-install_sublime_text_2
+install_sublime_text_3
 
 # Install IDEs
-	echo "a" | umake android /opt/android-Studio # Auto accept android-studio license
-	umake ide idea /opt/idea
-	umake ide eclipse /opt/eclipse
-	umake ide pycharm /opt/pycharm
+	echo "a" | umake android ~/tools/android-Studio; write_log android-studio $? # Auto accept android-studio license
+	umake ide idea ~/tools/idea; write_log idea $?
+	umake ide eclipse ~/tools/eclipse; write_log eclipse $?
+	umake ide pycharm ~/tools/pycharm; write_log pycharm $?
 
 # Make user able to run wireshark without root privilages, changes take efect after log out and log in
 		addgroup -system wireshark
@@ -186,6 +229,12 @@ install_sublime_text_2
 # Stop Ubuntu from violating your privacy, more about the script here: https://fixubuntu.com/
   wget -q -O - https://fixubuntu.com/fixubuntu.sh | bash
 
+# Configure Zsh
+configure_zsh
+
+# Configure Tmux
+configure_tmux
+
 #Cleaning up
   rm -rf $tempDir
 	apt-get check
@@ -193,7 +242,8 @@ install_sublime_text_2
 	apt-get -y autoremove
 	apt-get -y autoclean
 
-if[ $displayLog ]; then
+echo $showLog
+if [[ "$showLog" = true ]]; then
   echo "One or more programms wasn't installed successfully please check the \""$logFile"\" for more informations"
 else
   echo "The installation was successful"
