@@ -1,19 +1,29 @@
 #! /bin/bash -x
 
 #Script for installing on Ubuntu the following programms
-	#Tools: Wget, Git, Flash, Dropbox, Y PPA Manager, Ubuntu Make, Ubuntu restricted
-	#Text Editors: Vim, Bluefish, Atom, Sublime
+	#Tools: Wget, Curl, Tmux, Zsh, Git, Dropbox, Y PPA Manager, Ubuntu Make, Ubuntu restricted
+	#Text Editors: Vim, Atom, Sublime
 	#Multimedia Vlc, Gimp, Spotify, Libavcodec
 	#Browsers: Firefox for developers, Chromium, Chrome
 	#Mail Clients / IM: Thunderbird, Skype
-	#Security: Iptables, Wireshark, Hydra, Nmap, Aircrack-ng, Medusa, Metasploit, Burpsuite
+	#Security: Iptables, Wireshark, Hydra, Nmap, Aircrack-ng, Medusa
 	#Compilers: Python, Oracle's jdk 8, Ruby, G++, GCC
 	#IDEs: IntelliJ IDEA, Android Studio, Eclipse, Pycharm
 
-export logDir="/var/log/installation_script"
-export logFile="$logDir/installation_script_ubuntu.log"
-export architecture=$(uname -m)
+export logDir="/var/log/installation_script" #Log directory
+export logFile="$logDir/installation_script_ubuntu.log" # Log file
+export architecture=$(uname -m) # Computers architecture
 export tempDir=$(mktemp -d /tmp/tempdir.XXXXXXXX) # Create temp directory
+export alreadyInstalledCode=999 # Already installed code
+
+# Programms to be installed from reposittories
+declare -a tools=(wget curl git tmux zsh nautilus-dropbox y-ppa-manager ubuntu-make ubuntu-restricted-extras) #Tools
+declare -a textEditor=(vim atom) #Text Editors
+declare -a multimedia=(vlc gimp gimp-data gimp-data-extras gimp-plugin-registry spotify-client libavcodec-extra) #Multimedia
+declare -a browsers=(firefox chromium-browser google-chrome-stable) #Browsers
+declare -a mailClient=(thunderbird skype) #Mail Client / IM
+declare -a security=(iptables wireshark hydra nmap aircrack-ng medusa) #Security
+declare -a compilers=(ruby python3 g++ gcc oracle-java8-installer oracle-java8-set-default ) #Compilers
 
 
 # Check for root privilages
@@ -100,33 +110,50 @@ function add_repositories(){
 	apt-get update
 }
 
-function install_sublime_text_2(){
-  cd $tempDir
-		if [ $architecture == "x86_64" ];	then
-		  	wget http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2%20x64.tar.bz2
-		else
-		  	wget http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2.tar.bz2
-		fi
-		tar -xvf Sub*.bz2
-		cp -rv Sublime\ Text\ 2 /opt
-		ln -s /opt/Sublime\ Text\ 2/sublime_text /usr/bin/sublime-text
-		echo -e "[Desktop Entry]\nVersion=1.0\nName=Sublime Text 2\nGenericName=Text Editor\nExec=sublime\nTerminal=false\nIcon=/opt/Sublime Text 2/Icon/48x48/sublime_text.png\nType=Application\nCategories=TextEditor;IDE;Development\nX-Ayatana-Desktop-Shortcuts=NewWindow\n\n[NewWindow Shortcut Group]\nName=New Window\nExec=sublime -n\nTargetEnvironment=Unity" >> "/usr/share/applications/sublime.desktop"
+# Install the latest build of Sublime Text 3
+function install_sublime_text_3(){
+  urlFormat="http://c758482.r82.cf2.rackcdn.com/sublime-text_build-%d_%d.deb"
+  build=$(curl -Ls https://www.sublimetext.com/3 |
+          grep '<h2>Build' | head -n1 |
+          sed -E 's#<h2>Build ([0-9]+)</h2>#\1#g')
+
+  sublimeName="Sublime_Text_3_$build"
+
+  if [ $(subl -v | awk '{print $NF}') == $build ] ; then
+    write_log $sublimeName $alreadyInstalledCode
+  else
+    if [ $architecture == "x86_64" ];	then
+      url=$frontUrl$build"_amd64.deb"
+      wget -q $url
+      dpkg -i sublime-text_build*
+      exitLog=$?
+      write_log $sublimeName $exitLog
+
+    else
+      url=$frontUrl$build"_i386.deb"
+      wget -q $url
+      dpkg -i sublime-text_build*
+      exitLog=$?
+      write_log $sublimeName $exitLog
+
+    fi
+  fi
+
+
 }
 
-declare -a tools=(wget curl git tmux zsh nautilus-dropbox y-ppa-manager ubuntu-make ubuntu-restricted-extras) #Tools
-declare -a textEditor=(vim bluefish atom) #Text Editors
-declare -a multimedia=(vlc gimp gimp-data gimp-data-extras gimp-plugin-registry spotify-client libavcodec-extra) #Multimedia
-declare -a browsers=(firefox chromium-browser google-chrome-stable) #Browsers
-declare -a mailClient=(thunderbird skype) #Mail Client / IM
-declare -a security=(iptables wireshark hydra nmap aircrack-ng medusa) #Security
-declare -a compilers=(ruby g++ gcc oracle-java8-installer oracle-java8-set-default ) #Compilers
-
-echo "Start"
-
+# Main part
+echo "Checking for root privilages"
 check_conection
+echo "Your internet connection"
 check_root_privilages
+echo "Add necessary repositories"
 add_repositories
+echo "Creating log directory"
 create_log_directory
+
+cd $tempDir
+echo "Installing the applications..."
 
 apt-get -y purge openjdk* #delete openjdk
 echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections # Accepts oracl's license
@@ -160,10 +187,14 @@ install_sublime_text_2
   wget -q -O - https://fixubuntu.com/fixubuntu.sh | bash
 
 #Cleaning up
-  rm -f $tempDir
+  rm -rf $tempDir
 	apt-get check
 	apt-get -f install
 	apt-get -y autoremove
 	apt-get -y autoclean
 
-echo "Done"
+if[ $displayLog ]; then
+  echo "One or more programms wasn't installed successfully please check the \""$logFile"\" for more informations"
+else
+  echo "The installation was successful"
+fi
