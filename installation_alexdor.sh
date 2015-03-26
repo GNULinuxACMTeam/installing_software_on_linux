@@ -120,16 +120,16 @@ function install_sublime_text_3(){
   if [[ ! -z $(which subl) && $(subl -v | awk '{print $NF}') == $build ]] ; then
     		write_log $sublimeName $alreadyInstalledCode
   else
-  if [ $architecture == "x86_64" ]; then
-    url=$frontUrl$build"_amd64.deb"
-  else
-    url=$frontUrl$build"_i386.deb"
+    if [ $architecture == "x86_64" ]; then
+      url=$frontUrl$build"_amd64.deb"
+    else
+      url=$frontUrl$build"_i386.deb"
+    fi
+	  wget -q $url
+    dpkg -i sublime-text_build*
+    exitLog=$?
+    write_log $sublimeName $exitLog
   fi
-	    wget -q $url
-      dpkg -i sublime-text_build*
-      exitLog=$?
-      write_log $sublimeName $exitLog
-fi
 }
 
 # Configure tmux
