@@ -13,9 +13,6 @@
 #
 ##################################################################
 
-# Extensions:
-#   Check what's installed and what's not
-
 
 export M_USER=$USER
 export LOG_DIR='/var/log/installation-script'
@@ -26,7 +23,7 @@ export PARAM_ERROR=200
 function install_new_software()
 {
     cd /tmp;dir=`mktemp -d` && cd $dir
-    
+
     function add_new_ppas()
     {
         sudo add-apt-repository -y ppa:ubuntu-mozilla-daily/firefox-aurora
@@ -60,7 +57,7 @@ function install_new_software()
             fi
         fi
     }
-    
+
     function make_installation()
     {
         if [ ! -d /home/$M_USER/Applications ];then
@@ -75,82 +72,122 @@ function install_new_software()
     add_new_ppas
     # Tools
     CURRENT='unity-tweak-tool'
-    sudo apt-get install -y $CURRENT
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y $CURRENT
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='wget'
-    sudo apt-get install -y wget
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE
-    
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y wget
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
+
     # Text Editors
     CURRENT='vim'
-    sudo apt-get install -y vim
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y vim
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='sublime'
     if [ ! -e /usr/bin/subl ];then
 	    wget http://c758482.r82.cf2.rackcdn.com/sublime-text_build-3065_amd64.deb
 	    sudo dpkg -i sublime-text_build-3065_amd64.deb
 	    EXIT_CODE=$?
-	    write_log $CURRENT $EXIT_CODE 
-	else
-		write_log $CURRENT $ALREADY_INSTALLED_CODE
-	fi
+	    write_log $CURRENT $EXIT_CODE
+  	else
+  		write_log $CURRENT $ALREADY_INSTALLED_CODE
+  	fi
 
     CURRENT='atom'
     if [ ! -e /usr/bin/atom ];then
         wget https://atom.io/download/deb
         sudo dpkg -i deb
         EXIT_CODE=$?
-    	write_log $CURRENT $EXIT_CODE
-		sudo apt-get -f install
-	else
-		write_log $CURRENT $ALREADY_INSTALLED_CODE
+      	write_log $CURRENT $EXIT_CODE
+  		  sudo apt-get -f install
+	  else
+		    write_log $CURRENT $ALREADY_INSTALLED_CODE
     fi
     # change defaults
     sudo sed -i 's/gedit/sublime/g' /usr/share/applications/defaults.list
-    
+
     # Programming tools
     CURRENT='gcc'
-    sudo apt-get install -y gcc
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y gcc
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='g++'
-    sudo apt-get install -y g++
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y g++
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='openjdk-7'
-    sudo apt-get install -y openjdk-7-jdk
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y openjdk-7-jdk
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='python3'
-    sudo apt-get install -y python3
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y python3
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='rvm'
-    gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-    \curl -sSL https://get.rvm.io | bash -s stable --ruby
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
-    
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+      \curl -sSL https://get.rvm.io | bash -s stable --ruby
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
+
     CURRENT='git'
-    sudo apt-get install -y git
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y git
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     # IDEs
     CURRENT='codeblocks'
-    sudo apt-get install -y codeblocks
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
-   
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y codeblocks
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
+
 
  	CURRENT='eclipse'
     if [ ! -h /usr/local/bin/eclipse ];then
@@ -172,10 +209,10 @@ function install_new_software()
     else
     	write_log $CURRENT $ALREADY_INSTALLED_CODE
     fi
-   
+
 
    CURRENT='rubymine'
-    if [ ! -h /usr/local/bin/rubymine ];then 
+    if [ ! -h /usr/local/bin/rubymine ];then
         wget http://download.jetbrains.com/ruby/RubyMine-7.0.2.tar.gz
         tar -xzf RubyMine-7.0.2.tar.gz; make_installation "RubyMine-7.0.2" "bin/rubymine.sh" "rubymine"
         EXIT_CODE=$?
@@ -183,43 +220,71 @@ function install_new_software()
     else
     	write_log $CURRENT $ALREADY_INSTALLED_CODE
     fi
-    
+
     # Internet
     CURRENT='firefox'
-    sudo apt-get install -y firefox
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y firefox
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='thunderbird'
-    sudo apt-get install -y thunderbird
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y thunderbird
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='chromium'
-    sudo apt-get install -y chromium-browser
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y chromium-browser
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='apache2'
-    sudo apt-get install -y apache2
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
-    
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y apache2
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
+
     # Multimedia
     CURRENT='gimp'
-    sudo apt-get install -y gimp
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y gimp
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='VLC'
-    sudo apt-get install -y vlc
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y vlc
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     CURRENT='spotify'
-    sudo apt-get install -y --force-yes spotify-client
-    EXIT_CODE=$?
-    write_log $CURRENT $EXIT_CODE 
+    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
+      sudo apt-get install -y --force-yes spotify-client
+      EXIT_CODE=$?
+      write_log $CURRENT $EXIT_CODE
+    else
+      write_log $CURRENT $ALREADY_INSTALLED_CODE
+    fi
 
     # Cleanup
     rm -rf "/tmp/$dir"
@@ -230,20 +295,20 @@ function show_info()
     cat /proc/cpuinfo # cpu info
     cat /proc/meminfo # memory info
     cat /proc/version # kernel info
-    cat /proc/partitions # partitions info   
+    cat /proc/partitions # partitions info
 }
 
 
 # parse parameters
 while [[ $# > 0 ]];do
     key="$1"
-    shift    
+    shift
     case $key in
         -i|--info)
             show_info
         shift
         ;;
-        --u|--user)
+        -u|--user)
             $M_USER="$1"
         shift
         ;;
