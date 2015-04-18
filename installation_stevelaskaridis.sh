@@ -67,37 +67,26 @@ function install_new_software()
         sudo ln -s "/home/$M_USER/Applications/$1/$2" /usr/local/bin/$3
         return $?
     }
+    function install_from_repo()
+    {
+      CURRENT=$1
+      if ! APP_LOCATION="$(type -p "$CURRENT")" || [ -z "$APP_LOCATION" ]; then
+        sudo apt-get install -y $CURRENT
+        EXIT_CODE=$?
+        write_log $CURRENT $EXIT_CODE
+      else
+        write_log $CURRENT $ALREADY_INSTALLED_CODE
+      fi
+    }
 
     create_log_directory
     add_new_ppas
     # Tools
-    CURRENT='unity-tweak-tool'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y $CURRENT
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='wget'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y wget
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
+    install_from_repo 'unity-tweak-tool'
+    install_from_repo 'wget'
 
     # Text Editors
-    CURRENT='vim'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y vim
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
+    install_from_repo 'vim'
 
     CURRENT='sublime'
     if [ ! -e /usr/bin/subl ];then
@@ -123,41 +112,11 @@ function install_new_software()
     sudo sed -i 's/gedit/sublime/g' /usr/share/applications/defaults.list
 
     # Programming tools
-    CURRENT='gcc'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y gcc
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='g++'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y g++
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='openjdk-7'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y openjdk-7-jdk
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='python3'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y python3
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
+    install_from_repo 'gcc'
+    install_from_repo 'g++'
+    install_from_repo 'openjdk-7'
+    install_from_repo 'python3'
+    install_from_repo 'git'
 
     CURRENT='rvm'
     if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
@@ -169,35 +128,18 @@ function install_new_software()
       write_log $CURRENT $ALREADY_INSTALLED_CODE
     fi
 
-    CURRENT='git'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y git
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
     # IDEs
-    CURRENT='codeblocks'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y codeblocks
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
+    install_from_repo 'codeblocks'
 
-
- 	CURRENT='eclipse'
-    if [ ! -h /usr/local/bin/eclipse ];then
-        wget http://ftp.ntua.gr/eclipse/technology/epp/downloads/release/luna/SR1/eclipse-java-luna-SR1-linux-gtk-x86_64.tar.gz
-        tar -xzf eclipse-java-luna-SR1-linux-gtk-x86_64.tar.gz; make_installation "eclipse" "eclipse" "eclipse"
-        EXIT_CODE=$?
-    	write_log $CURRENT $EXIT_CODE
-    else
-    	write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
+   	CURRENT='eclipse'
+      if [ ! -h /usr/local/bin/eclipse ];then
+          wget http://ftp.ntua.gr/eclipse/technology/epp/downloads/release/luna/SR1/eclipse-java-luna-SR1-linux-gtk-x86_64.tar.gz
+          tar -xzf eclipse-java-luna-SR1-linux-gtk-x86_64.tar.gz; make_installation "eclipse" "eclipse" "eclipse"
+          EXIT_CODE=$?
+      	write_log $CURRENT $EXIT_CODE
+      else
+      	write_log $CURRENT $ALREADY_INSTALLED_CODE
+      fi
 
 
     CURRENT='pycharm'
@@ -205,86 +147,32 @@ function install_new_software()
         wget http://download.jetbrains.com/python/pycharm-community-4.0.3.tar.gz
         tar -xzf pycharm-community-4.0.3.tar.gz; make_installation "pycharm-community-4.0.3" "bin/pycharm.sh" "pycharm"
         EXIT_CODE=$?
-    	write_log $CURRENT $EXIT_CODE
+    	  write_log $CURRENT $EXIT_CODE
     else
-    	write_log $CURRENT $ALREADY_INSTALLED_CODE
+      	write_log $CURRENT $ALREADY_INSTALLED_CODE
     fi
 
 
-   CURRENT='rubymine'
+    CURRENT='rubymine'
     if [ ! -h /usr/local/bin/rubymine ];then
         wget http://download.jetbrains.com/ruby/RubyMine-7.0.2.tar.gz
         tar -xzf RubyMine-7.0.2.tar.gz; make_installation "RubyMine-7.0.2" "bin/rubymine.sh" "rubymine"
         EXIT_CODE=$?
-    	write_log $CURRENT $EXIT_CODE
+  	    write_log $CURRENT $EXIT_CODE
     else
-    	write_log $CURRENT $ALREADY_INSTALLED_CODE
+      	write_log $CURRENT $ALREADY_INSTALLED_CODE
     fi
 
     # Internet
-    CURRENT='firefox'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y firefox
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='thunderbird'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y thunderbird
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='chromium'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y chromium-browser
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='apache2'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y apache2
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
+    install_from_repo 'firefox'
+    install_from_repo 'thunderbird'
+    install_from_repo 'chromium'
+    install_from_repo 'apache2'
 
     # Multimedia
-    CURRENT='gimp'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y gimp
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='VLC'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y vlc
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
-
-    CURRENT='spotify'
-    if ! APPLOCATION="$(type -p "$CURRENT")" || [ -z "$APPLOCATION" ]; then
-      sudo apt-get install -y --force-yes spotify-client
-      EXIT_CODE=$?
-      write_log $CURRENT $EXIT_CODE
-    else
-      write_log $CURRENT $ALREADY_INSTALLED_CODE
-    fi
+    install_from_repo 'gimp'
+    install_from_repo 'VLC'
+    install_from_repo 'spotify'
 
     # Cleanup
     rm -rf "/tmp/$dir"
