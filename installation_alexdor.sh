@@ -207,7 +207,7 @@ install_repo_apps security
 install_sublime_text_3
 
 # Install IDEs
-	echo "a" | umake android ~/tools/android-Studio; write_log android-studio $? # Auto accept android-studio license
+  umake android ~/tools/android/android-studio --accept-license; write_log android-studio $? # Auto accept android-studio license
 	umake ide idea ~/tools/idea; write_log idea $?
 	umake ide eclipse ~/tools/eclipse; write_log eclipse $?
 	umake ide pycharm ~/tools/pycharm; write_log pycharm $?
